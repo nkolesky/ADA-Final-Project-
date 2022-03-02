@@ -116,15 +116,18 @@ specificity # Print to verify
 
 
 #Table One
-county_health_data$reg <- 
-    factor(county_health_data$reg, 
-           levels=c(1,2,3,4,5),
-           labels=c("West", 
-                   "Southwest", 
-                   "Midwest", 
-                   "Southeast", 
-                   "Northeast"))  ### Establish Labels for the table
-tab1 <- tableby(reg ~ obe_21 + fei_20 + pi_20 + aeo_20 + uni_20 + ieq_20, data=county_health_data) ###Build table
+Capstone_analysis$region <- 
+    factor(Capstone_analysis$region, 
+           levels=c(1,2,3,4,5,6,7,8),
+           labels=c("New England", 
+                   "Mideast", 
+                   "Great Lakes", 
+                   "Plains", 
+                   "Southeast",
+                   "Southwest",
+                   "Rocky Mountain",
+                   "Far West"))  ### Establish Labels for the table
+tab1 <- tableby(region ~ obe + smk + aeo + cip + shp + hmo + efl + mhi, data=Capstone_analysis) ###Build table
 summary(tab1, text=TRUE) ###Verify
 ```
 
@@ -133,12 +136,12 @@ summary(tab1, text=TRUE) ###Verify
 # Forest Plot
 
 datobe <- data.frame(
-Index = c(1, 2, 3, 4, 5),
-label = c("Food Environment Index", "Physical Inactivity (%)", "Access to Exercise Opportunities", "Uninsured (%)", "Income Inequity (80%-20%)"),                          # Establishing Labels
-OR = c(.9583788, 1.0698174, .9959172, .9706844, 1.0241873),  # Odds Ratio
-LL = c(.8856658, 1.0539172, .9923477, .9556166, .9205606),   # Lower Limit
-UL = c(1.0364314, 1.0861376, .9994818, .9859281, 1.1402790), # Upper Limit
-CI = c(".8856658, 1.0364314", "1.0539172, 1.0861376", ".9923477, .9994818", ".9556166, .9859281", ".9205606, 1.1402790")
+Index = c(1, 2, 3, 4, 5, 6, 7),
+label = c("Smoking (%)", "Access to Exercise Opportunities (%)", "Children in Poverty (%)", "Single Parent Home (%)", "Home Ownership (%)", "Eligible for Free Lunches (%)", "Median Household Income"),                      # Establishing Labels
+OR = c(1.232944, .9808057, .9690945, .8987841, .9682440, 1.027472, 1.000017),  # Odds Ratio
+LL = c(1.178497, .9743665, .9407422, .8687682, .9506359, 1.016394, 1.000003),   # Lower Limit
+UL = c(1.2909432, .9872203, .9983822, .9291330, .9860606, 1.0388018, 1.0000308), # Upper Limit
+CI = c("1.178497, 1.2909432", ".9743665, .9872203", ".9407422, .9983822", ".8687682, .9291330", ".9506359, .9860606", "1.016394, 1.0388018", " 1.000003, 1.0000308")
 )
 datobe # Verify
 
@@ -146,7 +149,7 @@ plot3 <- ggplot(datobe, aes(y = Index, x = OR)) +
     geom_point(shape = 18, size = 5) +  
     geom_errorbarh(aes(xmin = LL, xmax = UL), height = 0.25) +
     geom_vline(xintercept = 1, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
-    scale_y_continuous(name = "", breaks=1:5, labels = datobe$label, trans = "reverse") +
+    scale_y_continuous(name = "", breaks=1:7, labels = datobe$label, trans = "reverse") +
     xlab("Odds Ratio (95% CI)") + 
     ylab(" ") + 
     theme_bw() +
@@ -162,69 +165,133 @@ plot3
 ```
 # Correlation Plot
 ```{r}
-obecor <- dplyr::select_if(usa_county_health_dichot, is.numeric)
+obecor <- dplyr::select_if(Capstone_analysis, is.numeric)
 obeplot <- cor(obecor, use="complete.obs")
 round(obeplot, 2)        # Verify
 ggcorrplot(obeplot)      # Correlation Plot
 ```
 # Logistic Regression Models 
 
-#Physical Inactivity
+#Smoking
 ```{r}
-model <- glm(obe_21 ~ pi_20, data=usa_county_health_dichot, family=binomial)
+model <- glm(obe_dichot ~ smk, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(pi_20=seq(min(usa_county_health_dichot$pi_20), max(usa_county_health_dichot$pi_20),len=500))
+newdata <- data.frame(smk=seq(min(Capstone_analysis$smk), max(Capstone_analysis$smk),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_21 = predict(model, newdata, type="response")
+newdata$obe_dichot = predict(model, newdata, type="response")
 
 #plot logistic regression curve
-plot(obe_21 ~ pi_20, data=usa_county_health_dichot, col="steelblue")
-lines(obe_21 ~ pi_20, newdata, lwd=2)
+plot(obe_dichot ~ smk, data=Capstone_analysis, col="steelblue")
+lines(obe_dichot ~ smk, newdata, lwd=2)
 ```
 #Access to Exercise Opportunities
 ```{r}
-model <- glm(obe_21 ~ aeo_20, data=usa_county_health_dichot, family=binomial)
+model <- glm(obe_dichot ~ smk, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(aeo_20=seq(min(usa_county_health_dichot$aeo_20), max(usa_county_health_dichot$aeo_20),len=500))
+newdata <- data.frame(smk=seq(min(Capstone_analysis$smk), max(Capstone_analysis$smk),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_21 = predict(model, newdata, type="response")
+newdata$obe_dichot = predict(model, newdata, type="response")
 
 #plot logistic regression curve
-plot(obe_21 ~ aeo_20, data=usa_county_health_dichot, col="steelblue")
-lines(obe_21 ~ aeo_20, newdata, lwd=2)
+plot(obe_dichot ~ smk, data=Capstone_analysis, col="steelblue")
+lines(obe_dichot ~ smk, newdata, lwd=2)
 ```
 
-#Uninsured
+#Children in Poverty
 ```{r}
-model <- glm(obe_21 ~ uni_20, data=usa_county_health_dichot, family=binomial)
+model <- glm(obe_dichot ~ cip, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(uni_20=seq(min(usa_county_health_dichot$uni_20), max(usa_county_health_dichot$uni_20),len=500))
+newdata <- data.frame(cip=seq(min(Capstone_analysis$cip), max(Capstone_analysis$cip),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_21 = predict(model, newdata, type="response")
+newdata$obe_dichot = predict(model, newdata, type="response")
 
 #plot logistic regression curve
-plot(obe_21 ~ uni_20, data=usa_county_health_dichot, col="steelblue")
-lines(obe_21 ~ uni_20, newdata, lwd=2)
+plot(obe_dichot ~ cip, data=Capstone_analysis, col="steelblue")
+lines(obe_dichot ~ cip, newdata, lwd=2)
+```
+#Single Parent Home
+```{r}
+model <- glm(obe_dichot ~ sph, data=Capstone_analysis, family=binomial)
+
+#define new data frame that contains predictor variable
+newdata <- data.frame(sph=seq(min(Capstone_analysis$sph), max(Capstone_analysis$sph),len=500))
+
+#use fitted model to predict values of obesity
+newdata$obe_dichot = predict(model, newdata, type="response")
+
+#plot logistic regression curve
+plot(obe_dichot ~ sph, data=Capstone_analysis, col="steelblue")
+lines(obe_dichot ~ sph, newdata, lwd=2)
+```
+
+#Home Ownership
+```{r}
+model <- glm(obe_dichot ~ hmo, data=Capstone_analysis, family=binomial)
+
+#define new data frame that contains predictor variable
+newdata <- data.frame(hmo=seq(min(Capstone_analysis$hmo), max(Capstone_analysis$hmo),len=500))
+
+#use fitted model to predict values of obesity
+newdata$obe_dichot = predict(model, newdata, type="response")
+
+#plot logistic regression curve
+plot(obe_dichot ~ hmo, data=Capstone_analysis, col="steelblue")
+lines(obe_dichot ~ hmo, newdata, lwd=2)
+```
+#Eligible for Free Lunches
+```{r}
+model <- glm(obe_dichot ~ efl, data=Capstone_analysis, family=binomial)
+
+#define new data frame that contains predictor variable
+newdata <- data.frame(efl=seq(min(Capstone_analysis$efl), max(Capstone_analysis$efl),len=500))
+
+#use fitted model to predict values of obesity
+newdata$obe_dichot = predict(model, newdata, type="response")
+
+#plot logistic regression curve
+plot(obe_dichot ~ efl, data=Capstone_analysis, col="steelblue")
+lines(obe_dichot ~ efl, newdata, lwd=2)
+```
+
+#Median Household Income
+```{r}
+model <- glm(obe_dichot ~ mhi, data=Capstone_analysis, family=binomial)
+
+#define new data frame that contains predictor variable
+newdata <- data.frame(mhi=seq(min(Capstone_analysis$mhi), max(Capstone_analysis$mhi),len=500))
+
+#use fitted model to predict values of obesity
+newdata$obe_dichot = predict(model, newdata, type="response")
+
+#plot logistic regression curve
+plot(obe_dichot ~ mhi, data=Capstone_analysis, col="steelblue")
+lines(obe_dichot ~ mhi, newdata, lwd=2)
 ```
 
 #Cleveland Plot Charts for Significant Associations
 ```{r}
 #Obesity Rate
-ggplot(state_data, 
-       aes(x=obe_21, 
-           y=reorder(state, obe_21))) +
+state_obe <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(obe = mean(obe, na.rm = TRUE)) %>%
+        arrange(obe) %>%
+        mutate(state = factor(state, levels = .$state))
+        
+ggplot(state_obe, 
+       aes(x=obe, 
+           y=reorder(state, obe))) +
     geom_point(color="blue", 
                size = 2) +
     geom_segment(aes(x = 40, 
-                     xend = obe_21, 
-                     y = reorder(state, obe_21), 
-                     yend = reorder(state, obe_21)),
+                     xend = obe, 
+                     y = reorder(state, obe), 
+                     yend = reorder(state, obe)),
                  color = "lightgrey") +
     labs (x = "Obesity Rate (%)",
           y = "",
@@ -234,83 +301,206 @@ ggplot(state_data,
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
 
-#Physical Inactivity
-ggplot(state_data,
-      aes(x=pi_20,
-          y=reorder(state, pi_20))) +
-    geom_point(color="blue",
-               size = 2) +
-    geom_segment(aes(x = 40,
-                     xend = pi_20,
-                     y = reorder(state, pi_20),
-                     yend = reorder(state, pi_20)),
-                 color = "lightgrey") +
-    labs (x = "Physical Inactivity (%)",
-          y = "",
-          title = "Physical Inactivity by State",
-          subtitle = "County Health Rankings Data - 2020") +
-    theme_minimal() +
-    theme(panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank())
+#Smoking
 
-# Access to Exercise Opportunity
-ggplot(state_data, 
-       aes(x=aeo_20, 
-           y=reorder(state, aeo_20))) +
+state_smk <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(smk = mean(smk, na.rm = TRUE)) %>%
+        arrange(smk) %>%
+        mutate(state = factor(state, levels = .$state))
+ggplot(state_smk, 
+       aes(x=smk, 
+           y=reorder(state, smk))) +
     geom_point(color="blue", 
                size = 2) +
     geom_segment(aes(x = 40, 
-                     xend = aeo_20, 
-                     y = reorder(state, aeo_20), 
-                     yend = reorder(state, aeo_20)),
+                     xend = smk, 
+                     y = reorder(state, smk), 
+                     yend = reorder(state, smk)),
                  color = "lightgrey") +
-    labs (x = "Access to Exercise Opportunities (%)",
+    labs (x = "Smoking Rate (%)",
           y = "",
-          title = "Access to Exercise Opportunity by State",
-          subtitle = "County Health Rankings Data - 2020") +
+          title = "Smoking Rate by State",
+          subtitle = "County Health Rankings Data - 2021") +
     theme_minimal() + 
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
 
-#Uninsurance Rate
-ggplot(state_data, 
-         aes(x=uni_20, 
-             y=reorder(state, uni_20))) +
-      geom_point(color="blue", 
-                 size = 2) +
-      geom_segment(aes(x = 40, 
-                       xend = uni_20, 
-                       y = reorder(state, uni_20), 
-                       yend = reorder(state, uni_20)),
-                   color = "lightgrey") +
-      labs (x = "Percent of People Uninsured (%)",
-            y = "",
-            title = "Uninsurance Rate by State",
-            subtitle = "County Health Rankings Data - 2020") +
-      theme_minimal() + 
-      theme(panel.grid.major = element_blank(),
-           panel.grid.minor = element_blank())
+#Access to Exercise Opportunities
+state_aeo <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(aeo = mean(aeo, na.rm = TRUE)) %>%
+        arrange(aeo) %>%
+        mutate(state = factor(state, levels = .$state))
+        
+ggplot(state_aeo, 
+       aes(x=aeo, 
+           y=reorder(state, aeo))) +
+    geom_point(color="blue", 
+               size = 2) +
+    geom_segment(aes(x = 40, 
+                     xend = aeo, 
+                     y = reorder(state, aeo), 
+                     yend = reorder(state, aeo)),
+                 color = "lightgrey") +
+    labs (x = "Access to Exercise Opportunities(%)",
+          y = "",
+          title = "Access to Exercise Opportunities by State",
+          subtitle = "County Health Rankings Data - 2021") +
+    theme_minimal() + 
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
+
+#Children in Poverty
+state_cip <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(cip = mean(cip, na.rm = TRUE)) %>%
+        arrange(cip) %>%
+        mutate(state = factor(state, levels = .$state))
+        
+ggplot(state_cip, 
+       aes(x=cip, 
+           y=reorder(state, cip))) +
+    geom_point(color="blue", 
+               size = 1.5) +
+    geom_segment(aes(x = 40, 
+                     xend = cip, 
+                     y = reorder(state, cip), 
+                     yend = reorder(state, cip)),
+                 color = "lightgrey") +
+    labs (x = "Children in Poverty(%)",
+          y = "",
+          title = "Rate of Children in Poverty by State",
+          subtitle = "County Health Rankings Data - 2021") +
+    theme_minimal() + 
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
+          
+#Single Parent Home
+state_sph <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(sph = mean(sph, na.rm = TRUE)) %>%
+        arrange(sph) %>%
+        mutate(state = factor(state, levels = .$state))
+        
+ggplot(state_sph, 
+       aes(x=sph, 
+           y=reorder(state, sph))) +
+    geom_point(color="blue", 
+               size = 1.5) +
+    geom_segment(aes(x = 40, 
+                     xend = sph,
+                     y = reorder(state, sph), 
+                     yend = reorder(state, sph)),
+                 color = "lightgrey") +
+    labs (x = "Single Parent Home (%)",
+          y = "",
+          title = "Single Parent Home Rate by State",
+          subtitle = "County Health Rankings Data - 2021") +
+    theme_minimal() + 
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
+          
+#Home Ownership
+state_hmo <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(hmo = mean(hmo, na.rm = TRUE)) %>%
+        arrange(hmo) %>%
+        mutate(state = factor(state, levels = .$state))
+        
+ggplot(state_hmo, 
+       aes(x=hmo,
+           y=reorder(state, hmo))) +
+    geom_point(color="blue", 
+               size = 1.5) +
+    geom_segment(aes(x = 40, 
+                     xend = hmo, 
+                     y = reorder(state, hmo), 
+                     yend = reorder(state, hmo)),
+                 color = "lightgrey") +
+    labs (x = "Home Ownership",
+          y = "",
+          title = "Home Ownership by State",
+          subtitle = "County Health Rankings Data - 2021") +
+    theme_minimal() + 
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
+          
+#Eligible for Free Lunches
+state_efl <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(efl = mean(efl, na.rm = TRUE)) %>%
+        arrange(efl) %>%
+        mutate(state = factor(state, levels = .$state))
+        
+ggplot(state_efl, 
+       aes(x=efl, 
+           y=reorder(state, efl))) +
+    geom_point(color="blue", 
+               size = 1.5) +
+    geom_segment(aes(x = 40, 
+                     xend = efl, 
+                     y = reorder(state, efl), 
+                     yend = reorder(state, efl)),
+                 color = "lightgrey") +
+    labs (x = "Eligible for Free Lunches (%)",
+          y = "",
+          title = "Percent Eligible for Free Lunches by State",
+          subtitle = "County Health Rankings Data - 2021") +
+    theme_minimal() + 
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
+
+#Median Household Income
+state_mhi <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(mhi = mean(mhi, na.rm = TRUE)) %>%
+        arrange(mhi) %>%
+        mutate(state = factor(state, levels = .$state))
+        
+ggplot(state_mhi, 
+       aes(x=mhi, 
+           y=reorder(state, mhi))) +
+    geom_point(color="blue", 
+               size = 1.5) +
+    geom_segment(aes(x = 40, 
+                     xend = mhi, 
+                     y = reorder(state, mhi), 
+                     yend = reorder(state, mhi)),
+                 color = "lightgrey") +
+    labs (x = "Median Household Income",
+          y = "",
+          title = "Median Household Income by State",
+          subtitle = "County Health Rankings Data - 2021") +
+    theme_minimal() + 
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
 ```
 
 #Beeswarm Plots
 ```{r}
 #Establish Values
-plotdata <- county_health_data %>%
-    group_by(reg) %>%
+View(Capstone_analysis)
+View(Capstone_analysis)
+Regions.data <- read.csv("~/Desktop/Capstone/Regions data.csv")
+View(Regions.data)
+
+plotdata <- Regions.data%>%
+    group_by(region) %>%
     summarize(n = n(),
-        mean = mean(obe_21),
-        sd = sd(obe_21),
+        obe = mean(obe),
+        sd = sd(obe),
         se = sd / sqrt(n),
         ci = qt(0.975, df = n - 1) * sd / sqrt(n))
 
 #Plot the Regional Data
-ggplot(county_health_data, 
-       aes(x = factor(reg,
-                      labels = c("West",
-                                 "Southwest",
-                                 "Midwest", "Southeast", "Northeast")), 
-           y = obe_21, 
-           color = reg)) +
+ggplot(Regions.data, 
+       aes(x = factor(region,
+                      labels = c("New England",
+                                 "Mideast",
+                                 "Great Lakes", "Plains", "Southeast", "Southwest", "Rocky Mountain", "Far West")), 
+           y = obe, 
+           color = region)) +
     geom_quasirandom(alpha = 0.7,
                      size = 1.5) + 
     scale_y_continuous(label = ) +
