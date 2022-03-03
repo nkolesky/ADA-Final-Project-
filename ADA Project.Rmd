@@ -94,18 +94,18 @@ library(vipor)
 ```
 ### Logistic Regression
 ```{r}
-obelogit <- glm(obe_21 ~ fei_20 + pi_20 + aeo_20 + uni_20 + ieq_20, data = usa_county_health_dichot, family = "binomial") # Core of the analysis
+obelogit <- glm(obe ~ fei + smk + aeo + pcpr + chs + csc + pue + cip + ir + sph + shp + hmo + fi + lahf + uia + uic + tui + efl + wnws + rural + mhi + wv + rural_dichot, data = Capstone_analysis, family = "binomial") # Core of the analysis
 
 summary(obelogit) # Print to verify
 confint(obelogit)
 exp(cbind(OR= coef(obelogit), confint(obelogit))) # 95% CI + OR
 
-usa_county_health_dichot$obeprob <- round(fitted(obelogit), 2) #New variable and significant figures
+Capstone_analysis$obeprob <- round(fitted(obelogit), 2) #New variable and significant figures
 ```
 
 ## Tables
 ```{r}
-classificationtable <- table(usa_county_health_dichot$obe_21, usa_county_health_dichot$obeprob >.5) 
+classificationtable <- table(Capstone_analysis$obe, Capstone_analysis$obeprob >.5) 
 classificationtable # Print to verify
 
 sensitivity<-(classificationtable[2,2]/(classificationtable[2,2]+classificationtable[2,1]))*100 # Test the sensitivity of the analysis
@@ -476,6 +476,94 @@ ggplot(state_mhi,
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
 ```
+# Lines of Best Fit
+```{r}
+
+#SMK
+ggplot(Capstone_analysis,
+aes(x = smk,
+y = obe)) +
+geom_point(color= "steelblue") +
+geom_smooth(method = "lm") +
+    labs(title = "Obesity Rate by Smoking", 
+         x = "Smoking (%)",
+         y = "Obesity Rate (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+#AEO
+ggplot(Capstone_analysis,
+aes(x = aeo,
+y = obe)) +
+geom_point(color= "steelblue") +
+geom_smooth(method = "lm") +
+    labs(title = "Obesity Rate by Access to Exercise Opportunities", 
+         x = "Access to Exercise Opportunities (%)",
+         y = "Obesity Rate (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+    
+    
+#CIP
+ggplot(Capstone_analysis,
+aes(x = cip,
+y = obe)) +
+geom_point(color= "steelblue") +
+geom_smooth(method = "lm") +
+    labs(title = "Obesity Rate by Children in Poverty", 
+         x = "Children in Poverty (%)",
+         y = "Obesity Rate (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+#SPH
+ggplot(Capstone_analysis,
+aes(x = sph,
+y = obe)) +
+geom_point(color= "steelblue") +
+geom_smooth(method = "lm") +
+    labs(title = "Obesity Rate by Single Parent Homes", 
+         x = "Single Parent Homes (%)",
+         y = "Obesity Rate (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+#HMO
+ggplot(Capstone_analysis,
+aes(x = aeo,
+y = obe)) +
+geom_point(color= "steelblue") +
+geom_smooth(method = "lm") +
+    labs(title = "Obesity Rate by Home Ownership", 
+         x = "Home Ownership (%)",
+         y = "Obesity Rate (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+#EFL
+ggplot(Capstone_analysis,
+aes(x = efl,
+y = obe)) +
+geom_point(color= "steelblue") +
+geom_smooth(method = "lm") +
+    labs(title = "Obesity Rate by Eligibity for Free Lunches", 
+         x = "Eligible for Free Lunches (%)",
+         y = "Obesity Rate (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+       
+# MHI
+ggplot(Capstone_analysis,
+aes(x = mhi,
+y = obe)) +
+geom_point(color= "steelblue") +
+geom_smooth(method = "lm") +
+    labs(title = "Obesity Rate by Median Household Income", 
+         x = "Median Household Income ($)",
+         y = "Obesity Rate (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+```
 
 #Beeswarm Plots
 ```{r}
@@ -510,4 +598,64 @@ ggplot(Regions.data,
          y = "Obesity Rate (%)") +
     theme_minimal() +
     theme(legend.position = "none")
+
+# Plots for Obesity Probality   
+ggplot(Regions.data, 
+       aes(x = factor(region,
+                      labels = c("New England",
+                                 "Mideast",
+                                 "Great Lakes", "Plains", "Southeast", "Southwest", "Rocky Mountain", "Far West")), 
+           y = obeprob, 
+           color = region)) +
+    geom_quasirandom(alpha = 0.7,
+                     size = 1.5) + 
+    scale_y_continuous(label = ) +
+    labs(title = "Obesity Probality by Region", 
+         x = "",
+         y = "Obesity Probality") +
+    theme_minimal() +
+    theme(legend.position = "none")
 ```
+### Dichot Variables
+```{r}
+
+#### Work in Progress
+# Find Areas of Significance
+model <- glm(obe_dichot ~ rural_dichot + wv,
+family = "binomial",
+data = Capstone_analysis,
+na.action = na.exclude)
+summary(model)
+
+obelogit <- glm(obe ~ fei + smk + aeo + pcpr + chs + csc + pue + cip + ir + sph + shp + hmo + fi + lahf + uia + uic + tui + efl + wnws + rural + mhi + wv + rural_dichot, data = Regions.data, family = "binomial") # Core of the analysis
+summary(obelogit) # Print to verify
+confint(obelogit)
+exp(cbind(OR= coef(obelogit), confint(obelogit))) # 95% CI + OR
+
+Regions.data$obeprob <- round(fitted(obelogit), 2) #New variable and significant figures
+
+#Plot
+ggplot(Regions.data, aes(x = smk, y = obeprob)) + geom_ribbon(aes(ymin = LL,
+    ymax = UL, fill = rank), alpha = 0.2) + geom_line(aes(colour = region),
+    size = 1)
+####
+
+# Box Plots
+boxplot(obeprob~wv,data=Regions.data, main="Box Plot of Obesity Probabity by Unsafe Water",
+   xlab="Water Violations", ylab="Obesity Probality")
+   
+boxplot(obeprob~rural_dichot,data=Regions.data, main="Box Plot of Obesity Probabity by Rurality",
+   xlab="Rural Majority County", ylab="Obesity Probality")
+
+
+ggplot(Regions.data, aes(x=wv, y=obe, fill=name)) +
+geom_boxplot() +
+scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+geom_jitter(color="black", size=0.4, alpha=0.9) +
+theme_ipsum() +
+theme(
+legend.position="none",
+plot.title = element_text(size=11)
+) +
+ggtitle("A boxplot with jitter") +
+xlab("")
