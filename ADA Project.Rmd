@@ -94,7 +94,7 @@ library(vipor)
 ```
 ### Logistic Regression
 ```{r}
-obelogit <- glm(obe ~ fei + smk + aeo + pcpr + chs + csc + pue + cip + ir + sph + shp + hmo + fi + lahf + uia + uic + tui + efl + wnws + rural + mhi + wv + rural_dichot, data = Capstone_analysis, family = "binomial") # Core of the analysis
+obelogit <- glm(obe_dichot ~ fei + smk + aeo + pcpr + chs + csc + pue + cip + ir + sph + shp + hmo + fi + lahf + uia + uic + tui + efl + wnws + rural + mhi + wv + rural_dichot, data = Capstone_analysis, family = "binomial") # Core of the analysis
 
 summary(obelogit) # Print to verify
 confint(obelogit)
