@@ -64,6 +64,8 @@ View(usa_county_health_dichot) #Verify
 state_data <- read.csv("~/Desktop/ADA/state_data.csv") #Read
 View(state_data) #Verify
 ```
+Capstone_analysis <- read.csv("~/Desktop/Capstone/Capstone_analysis 2.csv")
+View(Capstone_analysis) 
 
 ###Load in Packages
 ```{r}
@@ -127,8 +129,35 @@ Capstone_analysis$region <-
                    "Southwest",
                    "Rocky Mountain",
                    "Far West"))  ### Establish Labels for the table
-tab1 <- tableby(region ~ obe + smk + aeo + cip + shp + hmo + efl + mhi, data=Capstone_analysis) ###Build table
+tab1 <- tableby(region ~ obe + smk + aeo + cip + sph + shp + hmo + efl + mhi, data=Capstone_analysis) ###Build table
 summary(tab1, text=TRUE) ###Verify
+```
+``` {r}
+labels <- list(
+variables=list(obe="Obesity (%)",
+smk="Smoking (%)",
+aeo="Access to Exercise Opportunities (%)",
+cip="Children in Poverty (%)",
+sph="Single Parent Home (%)",
+shp="Severe Housing Problem (%)",
+hmo="Home Ownership (%)",
+efl="Eligible for Free Lunches (%)",
+mhi="Median Household Income ($)"),
+groups=list(""))
+
+strata <- c(list(Total=Capstone_analysis), split(Capstone_analysis, Capstone_analysis$region))
+
+my.render.cont <- function(x) {
+    with(stats.apply.rounding(stats.default(x), digits=2), c("",
+        "Mean (SD)"=sprintf("%s (&plusmn; %s)", MEAN, SD)))
+}
+my.render.cat <- function(x) {
+    c("", sapply(stats.default(x), function(y) with(y,
+        sprintf("%d (%0.0f %%)", FREQ, PCT))))
+}
+
+table1(strata, labels, groupspan=c(1, 1, 2),
+       render.continuous=my.render.cont, render.categorical=my.render.cat)
 ```
 
 ## Plots
@@ -136,12 +165,12 @@ summary(tab1, text=TRUE) ###Verify
 # Forest Plot
 
 datobe <- data.frame(
-Index = c(1, 2, 3, 4, 5, 6, 7),
-label = c("Smoking (%)", "Access to Exercise Opportunities (%)", "Children in Poverty (%)", "Single Parent Home (%)", "Home Ownership (%)", "Eligible for Free Lunches (%)", "Median Household Income"),                      # Establishing Labels
-OR = c(1.232944, .9808057, .9690945, .8987841, .9682440, 1.027472, 1.000017),  # Odds Ratio
-LL = c(1.178497, .9743665, .9407422, .8687682, .9506359, 1.016394, 1.000003),   # Lower Limit
-UL = c(1.2909432, .9872203, .9983822, .9291330, .9860606, 1.0388018, 1.0000308), # Upper Limit
-CI = c("1.178497, 1.2909432", ".9743665, .9872203", ".9407422, .9983822", ".8687682, .9291330", ".9506359, .9860606", "1.016394, 1.0388018", " 1.000003, 1.0000308")
+Index = c(1, 2, 3, 4, 5, 6, 7, 8),
+label = c("Smoking (%)", "Access to Exercise Opportunities (%)", "Children in Poverty (%)", "Single Parent Home (%)", "Severe Housing Problem (%)", "Home Ownership (%)", "Eligible for Free Lunches (%)", "Median Household Income"),                      # Establishing Labels
+OR = c(1.232944, .9808057, .9690945, .8987841, .9019448, .9682440, 1.027472, 1.000017),  # Odds Ratio
+LL = c(1.178497, .9743665, .9407422, .8687682, .8715728, .9506359, 1.016394, 1.000003),   # Lower Limit
+UL = c(1.2909432, .9872203, .9983822, .9291330, .9326202, .9860606, 1.0388018, 1.0000308), # Upper Limit
+CI = c("1.178497, 1.2909432", ".9743665, .9872203", ".9407422, .9983822", ".8687682, .9291330", ".8715728, .9326202", ".9506359, .9860606", "1.016394, 1.0388018", " 1.000003, 1.0000308")
 )
 datobe # Verify
 
@@ -228,6 +257,21 @@ newdata$obe_dichot = predict(model, newdata, type="response")
 #plot logistic regression curve
 plot(obe_dichot ~ sph, data=Capstone_analysis, col="steelblue")
 lines(obe_dichot ~ sph, newdata, lwd=2)
+```
+
+#Severe Housing Problems
+```{r}
+model <- glm(obe_dichot ~ shp, data=Capstone_analysis, family=binomial)
+
+#define new data frame that contains predictor variable
+newdata <- data.frame(shp=seq(min(Capstone_analysis$shp), max(Capstone_analysis$shp),len=500))
+
+#use fitted model to predict values of obesity
+newdata$obe_dichot = predict(model, newdata, type="response")
+
+#plot logistic regression curve
+plot(obe_dichot ~ shp, data=Capstone_analysis, col="steelblue")
+lines(obe_dichot ~ shp, newdata, lwd=2)
 ```
 
 #Home Ownership
@@ -400,6 +444,32 @@ ggplot(state_sph,
     theme_minimal() + 
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
+  
+#Severe Housing Problem
+state_shp <- Capstone_analysis %>%
+        group_by(state) %>%
+        summarise(shp = mean(sph, na.rm = TRUE)) %>%
+        arrange(shp) %>%
+        mutate(state = factor(state, levels = .$state))
+        
+ggplot(state_shp, 
+       aes(x=shp, 
+           y=reorder(state, shp))) +
+    geom_point(color="blue", 
+               size = 1.5) +
+    geom_segment(aes(x = 40, 
+                     xend = shp,
+                     y = reorder(state, shp), 
+                     yend = reorder(state, shp)),
+                 color = "lightgrey") +
+    labs (x = "Severe Housing Problems (%)",
+          y = "",
+          title = "Severe Housing Problems Rate by State",
+          subtitle = "County Health Rankings Data - 2021") +
+    theme_minimal() + 
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
+          
           
 #Home Ownership
 state_hmo <- Capstone_analysis %>%
@@ -528,6 +598,18 @@ geom_smooth(method = "lm") +
     theme_minimal() +
     theme(legend.position = "none")
 
+#SHP
+ggplot(Capstone_analysis,
+aes(x = shp,
+y = obe)) +
+geom_point(color= "steelblue") +
+geom_smooth(method = "lm") +
+    labs(title = "Obesity Rate by Severe Housing Problems", 
+         x = "Severe Housing Problems (%)",
+         y = "Obesity Rate (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+
 #HMO
 ggplot(Capstone_analysis,
 aes(x = aeo,
@@ -599,7 +681,10 @@ ggplot(Regions.data,
     theme_minimal() +
     theme(legend.position = "none")
 
-# Plots for Obesity Probality   
+# Plots for Obesity Probality
+
+Regions.data$obeprob <- round(fitted(obelogit), 2) #New variable and significant figures
+
 ggplot(Regions.data, 
        aes(x = factor(region,
                       labels = c("New England",
