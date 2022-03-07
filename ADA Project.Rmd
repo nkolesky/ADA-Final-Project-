@@ -217,105 +217,110 @@ lines(obe_dichot ~ smk, newdata, lwd=2)
 ```
 #Access to Exercise Opportunities
 ```{r}
-model <- glm(obe_dichot ~ smk, data=Capstone_analysis, family=binomial)
+model1 <- glm(obe_dichot ~ smk, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(smk=seq(min(Capstone_analysis$smk), max(Capstone_analysis$smk),len=500))
+newdata1 <- data.frame(smk=seq(min(Capstone_analysis$smk), max(Capstone_analysis$smk),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_dichot = predict(model, newdata, type="response")
+newdata1$obe_dichot = predict(model1, newdata1, type="response")
 
 #plot logistic regression curve
 plot(obe_dichot ~ smk, data=Capstone_analysis, col="steelblue")
-lines(obe_dichot ~ smk, newdata, lwd=2)
+lines(obe_dichot ~ smk, newdata1, lwd=2)
 ```
 
 #Children in Poverty
 ```{r}
-model <- glm(obe_dichot ~ cip, data=Capstone_analysis, family=binomial)
+model2 <- glm(obe_dichot ~ cip, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(cip=seq(min(Capstone_analysis$cip), max(Capstone_analysis$cip),len=500))
+newdata2 <- data.frame(cip=seq(min(Capstone_analysis$cip), max(Capstone_analysis$cip),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_dichot = predict(model, newdata, type="response")
+newdata2$obe_dichot = predict(model2, newdata2, type="response")
 
 #plot logistic regression curve
 plot(obe_dichot ~ cip, data=Capstone_analysis, col="steelblue")
-lines(obe_dichot ~ cip, newdata, lwd=2)
+lines(obe_dichot ~ cip, newdata2, lwd=2)
 ```
 #Single Parent Home
 ```{r}
-model <- glm(obe_dichot ~ sph, data=Capstone_analysis, family=binomial)
+model3 <- glm(obe_dichot ~ sph, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(sph=seq(min(Capstone_analysis$sph), max(Capstone_analysis$sph),len=500))
+newdata3 <- data.frame(sph=seq(min(Capstone_analysis$sph), max(Capstone_analysis$sph),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_dichot = predict(model, newdata, type="response")
+newdata3$obe_dichot = predict(model3, newdata3, type="response")
 
 #plot logistic regression curve
 plot(obe_dichot ~ sph, data=Capstone_analysis, col="steelblue")
-lines(obe_dichot ~ sph, newdata, lwd=2)
+lines(obe_dichot ~ sph, newdata3, lwd=2)
 ```
 
 #Severe Housing Problems
 ```{r}
-model <- glm(obe_dichot ~ shp, data=Capstone_analysis, family=binomial)
+model4 <- glm(obe_dichot ~ shp, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(shp=seq(min(Capstone_analysis$shp), max(Capstone_analysis$shp),len=500))
+newdata4 <- data.frame(shp=seq(min(Capstone_analysis$shp), max(Capstone_analysis$shp),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_dichot = predict(model, newdata, type="response")
+newdata4$obe_dichot = predict(model4, newdata4, type="response")
 
 #plot logistic regression curve
 plot(obe_dichot ~ shp, data=Capstone_analysis, col="steelblue")
-lines(obe_dichot ~ shp, newdata, lwd=2)
+lines(obe_dichot ~ shp, newdata4, lwd=2)
 ```
 
 #Home Ownership
 ```{r}
-model <- glm(obe_dichot ~ hmo, data=Capstone_analysis, family=binomial)
+model5 <- glm(obe_dichot ~ hmo, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(hmo=seq(min(Capstone_analysis$hmo), max(Capstone_analysis$hmo),len=500))
+newdata5 <- data.frame(hmo=seq(min(Capstone_analysis$hmo), max(Capstone_analysis$hmo),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_dichot = predict(model, newdata, type="response")
+newdata5$obe_dichot = predict(model5, newdata5, type="response")
 
 #plot logistic regression curve
 plot(obe_dichot ~ hmo, data=Capstone_analysis, col="steelblue")
-lines(obe_dichot ~ hmo, newdata, lwd=2)
+lines(obe_dichot ~ hmo, newdata5, lwd=2)
 ```
 #Eligible for Free Lunches
 ```{r}
-model <- glm(obe_dichot ~ efl, data=Capstone_analysis, family=binomial)
+model6 <- glm(obe_dichot ~ efl, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(efl=seq(min(Capstone_analysis$efl), max(Capstone_analysis$efl),len=500))
+newdata6 <- data.frame(efl=seq(min(Capstone_analysis$efl), max(Capstone_analysis$efl),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_dichot = predict(model, newdata, type="response")
+newdata6$obe_dichot = predict(model6, newdata6, type="response")
 
 #plot logistic regression curve
 plot(obe_dichot ~ efl, data=Capstone_analysis, col="steelblue")
-lines(obe_dichot ~ efl, newdata, lwd=2)
+lines(obe_dichot ~ efl, newdata6, lwd=2)
 ```
 
 #Median Household Income
 ```{r}
-model <- glm(obe_dichot ~ mhi, data=Capstone_analysis, family=binomial)
+model7 <- glm(obe_dichot ~ mhi, data=Capstone_analysis, family=binomial)
 
 #define new data frame that contains predictor variable
-newdata <- data.frame(mhi=seq(min(Capstone_analysis$mhi), max(Capstone_analysis$mhi),len=500))
+newdata7 <- data.frame(mhi=seq(min(Capstone_analysis$mhi), max(Capstone_analysis$mhi),len=500))
 
 #use fitted model to predict values of obesity
-newdata$obe_dichot = predict(model, newdata, type="response")
+newdata7$obe_dichot = predict(model7, newdata7, type="response")
 
 #plot logistic regression curve
-plot(obe_dichot ~ mhi, data=Capstone_analysis, col="steelblue")
-lines(obe_dichot ~ mhi, newdata, lwd=2)
+plot(obe_dichot ~ mhi, data=Capstone_analysis, col="steelblue"),
+lines(obe_dichot ~ mhi, newdata7, lwd=2)
+
+# Arrange on one page
+# ggarrange(smk, aeo, cip, sph, shp, hmo, efl, mhi + rremove("x.text"),
+# labels = c("Smoking", "Access to Exercise Opportunities", "Children in Poverty", "Single Parent Homes", "Severe Housing Problems", "Home Ownership", "Eligible  for Free Lunches", "Median Household Income"),
+# ncol = 2, nrow = 2)
 ```
 
 #Cleveland Plot Charts for Significant Associations
